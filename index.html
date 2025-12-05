@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime “Fake AI” Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background-color: #111; color: white; font-family: sans-serif; }
+  .gallery img { transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+  .gallery img:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff3ca6; }
+</style>
+</head>
+<body class="p-4 flex flex-col items-center min-h-screen">
+
+<h1 class="text-4xl font-bold text-pink-400 mb-2 text-center">Anime “Fake AI” Generator</h1>
+<p class="text-gray-300 text-center max-w-md mb-4">Enter a prompt and generate a random anime image. Fully free, no API needed!</p>
+
+<div class="w-full max-w-md bg-gray-800/70 p-4 rounded-2xl shadow-lg mb-4">
+  <input id="prompt" type="text" placeholder="Enter anime prompt..." class="w-full mt-2 p-3 rounded-xl bg-gray-700 text-white"/>
+  <button id="generateBtn" class="w-full mt-4 py-3 bg-pink-500 rounded-xl font-bold hover:bg-pink-600">Generate</button>
+</div>
+
+<div id="gallery" class="gallery grid grid-cols-2 gap-2 w-full max-w-md"></div>
+
+<script>
+const images = [
+  "https://i.ibb.co/7SgkJ7F/anime1.jpg",
+  "https://i.ibb.co/0JQq5wP/anime2.jpg",
+  "https://i.ibb.co/0B7GfVs/anime3.jpg",
+  "https://i.ibb.co/YB9LvqV/anime4.jpg",
+  "https://i.ibb.co/6HqQmXc/anime5.jpg"
+];
+
+const generateBtn = document.getElementById("generateBtn");
+const gallery = document.getElementById("gallery");
+
+generateBtn.addEventListener("click", () => {
+  const prompt = document.getElementById("prompt").value.trim();
+  if(!prompt) { alert("Please enter a prompt!"); return; }
+
+  const imgUrl = images[Math.floor(Math.random() * images.length)];
+
+  const container = document.createElement("div");
+  container.className = "flex flex-col items-center";
+
+  const img = document.createElement("img");
+  img.src = imgUrl;
+  img.alt = prompt;
+  img.className = "w-full h-48 object-cover rounded-xl mb-2";
+
+  const downloadBtn = document.createElement("a");
+  downloadBtn.href = imgUrl;
+  downloadBtn.download = "anime_image.jpg";
+  downloadBtn.textContent = "Download";
+  downloadBtn.className = "py-1 px-3 bg-pink-500 rounded-xl font-bold text-white hover:bg-pink-600 mb-4";
+
+  container.appendChild(img);
+  container.appendChild(downloadBtn);
+  gallery.prepend(container);
+
+  if(gallery.children.length>20) gallery.removeChild(gallery.lastChild);
+});
+</script>
+
+</body>
+                                            </html>
