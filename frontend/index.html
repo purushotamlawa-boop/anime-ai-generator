@@ -1,14 +1,77 @@
-{
-  "name": "anime-ai-generator",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "node-fetch": "^3.3.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime AI Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background-color: #111; color: white; font-family: sans-serif; }
+.loader { border: 4px solid #f3f3f3; border-top: 4px solid #ff3ca6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: auto; margin-top: 10px; display:none;}
+@keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+img { max-width: 100%; border-radius: 12px; margin-top: 10px; }
+</style>
+</head>
+<body class="p-4 flex flex-col items-center min-h-screen">
+
+<h1 class="text-4xl font-bold text-pink-400 mb-4 text-center">Anime AI Generator</h1>
+
+<div class="w-full max-w-md bg-gray-800/70 p-4 rounded-2xl shadow-lg">
+  <input id="prompt" type="text" placeholder="Enter anime prompt..." class="w-full p-3 rounded-xl bg-gray-700 text-white mb-3"/>
+  
+  <select id="model" class="w-full p-3 rounded-xl bg-gray-700 text-white mb-3">
+    <option value="waifu">Waifu</option>
+    <option value="anime-v4">Anime V4</option>
+    <option value="anything-v4">Anything V4</option>
+  </select>
+
+  <button id="generateBtn" class="w-full py-3 bg-pink-500 rounded-xl font-bold hover:bg-pink-600">Generate</button>
+  <div id="loader" class="loader"></div>
+  <img id="result" src="" alt="" class="hidden"/>
+  <a id="downloadBtn" href="#" download="anime_image.png" class="hidden py-1 px-3 bg-pink-500 rounded-xl font-bold text-white hover:bg-pink-600 mt-2">Download</a>
+</div>
+
+<script>
+const generateBtn = document.getElementById("generateBtn");
+const promptInput = document.getElementById("prompt");
+const modelSelect = document.getElementById("model");
+const loader = document.getElementById("loader");
+const resultImg = document.getElementById("result");
+const downloadBtn = document.getElementById("downloadBtn");
+
+generateBtn.addEventListener("click", async () => {
+  const prompt = promptInput.value.trim();
+  const model = modelSelect.value;
+  if(!prompt) { alert("Enter a prompt!"); return; }
+
+  generateBtn.disabled = true;
+  loader.style.display = "block";
+  resultImg.classList.add("hidden");
+  downloadBtn.classList.add("hidden");
+
+  try {
+    const res = await fetch("/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, model })
+    });
+    const arrayBuffer = await res.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const imgUrl = `data:image/png;base64,${base64}`;
+
+    resultImg.src = imgUrl;
+    resultImg.classList.remove("hidden");
+
+    downloadBtn.href = imgUrl;
+    downloadBtn.classList.remove("hidden");
+  } catch(err) {
+    alert("Error generating image.");
+    console.error(err);
   }
-}
+
+  loader.style.display = "none";
+  generateBtn.disabled = false;
+});
+</script>
+</body>
+      </html>
